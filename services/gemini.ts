@@ -3,7 +3,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ChristmasWish } from "../types";
 
 export const generateChristmasWishList = async (): Promise<ChristmasWish[]> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+  // Always use a named parameter for the API key and use the environment variable directly.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
@@ -21,14 +22,17 @@ export const generateChristmasWishList = async (): Promise<ChristmasWish[]> => {
             message: { type: Type.STRING, description: "The full wish message containing both German and Chinese text." },
             language: { type: Type.STRING, description: "Should be 'German & Chinese'" }
           },
-          required: ["title", "message", "language"]
+          required: ["title", "message", "language"],
+          propertyOrdering: ["title", "message", "language"]
         }
       }
     }
   });
 
   try {
-    const wishes = JSON.parse(response.text || '[]');
+    // Access the text property directly (not as a method) as per the latest SDK.
+    const jsonStr = response.text || '[]';
+    const wishes = JSON.parse(jsonStr.trim());
     return wishes;
   } catch (e) {
     return [{

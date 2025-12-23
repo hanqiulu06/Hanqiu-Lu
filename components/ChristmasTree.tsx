@@ -4,6 +4,19 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Float, Stars } from '@react-three/drei';
 
+// Map intrinsic Three.js elements to constants to resolve JSX type errors in environments without R3F global type augmentation.
+const Group = 'group' as any;
+const Points = 'points' as any;
+const BufferGeometry = 'bufferGeometry' as any;
+const BufferAttribute = 'bufferAttribute' as any;
+const PointsMaterial = 'pointsMaterial' as any;
+const Mesh = 'mesh' as any;
+const SphereGeometry = 'sphereGeometry' as any;
+const MeshStandardMaterial = 'meshStandardMaterial' as any;
+const OctahedronGeometry = 'octahedronGeometry' as any;
+const PointLight = 'pointLight' as any;
+const AmbientLight = 'ambientLight' as any;
+
 interface ChristmasTreeProps {
   power: boolean;
   spread: number;
@@ -92,20 +105,20 @@ const ChristmasTree: React.FC<ChristmasTreeProps> = ({ power, spread, rotation, 
   });
 
   return (
-    <group>
+    <Group>
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
       
       {/* The Tree - Always visible, but dimmed when power is off */}
-      <points ref={pointsRef}>
-        <bufferGeometry>
-          <bufferAttribute
+      <Points ref={pointsRef}>
+        <BufferGeometry>
+          <BufferAttribute
             attach="attributes-position"
             count={particleCount}
             array={positions}
             itemSize={3}
           />
-        </bufferGeometry>
-        <pointsMaterial
+        </BufferGeometry>
+        <PointsMaterial
           size={0.035}
           color={power ? "#60a5fa" : "#064e3b"}
           transparent
@@ -113,50 +126,50 @@ const ChristmasTree: React.FC<ChristmasTreeProps> = ({ power, spread, rotation, 
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
-      </points>
+      </Points>
 
       {/* Decorative Lights */}
-      <group>
+      <Group>
         {Array.from({ length: 12 }).map((_, i) => (
            <Float key={i} speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-            <mesh 
+            <Mesh 
               position={[
                 Math.sin(i) * (2 + spread * 5 + explosionOffset * 2), 
                 (i - 4) + (spread * 2 + explosionOffset), 
                 Math.cos(i) * (2 + spread * 5 + explosionOffset * 2)
               ]}
             >
-              <sphereGeometry args={[0.08, 16, 16]} />
-              <meshStandardMaterial 
+              <SphereGeometry args={[0.08, 16, 16]} />
+              <MeshStandardMaterial 
                 color={i % 2 === 0 ? "#ef4444" : "#fbbf24"} 
                 emissive={i % 2 === 0 ? "#ef4444" : "#fbbf24"}
                 emissiveIntensity={power ? 5 : 0.2}
                 transparent
                 opacity={power ? 1 : 0.3}
               />
-            </mesh>
+            </Mesh>
           </Float>
         ))}
-      </group>
+      </Group>
 
       {/* The Star */}
-      <group ref={starRef} position={[0, 4.2, 0]}>
-        <mesh>
-          <octahedronGeometry args={[0.4, 0]} />
-          <meshStandardMaterial 
+      <Group ref={starRef} position={[0, 4.2, 0]}>
+        <Mesh>
+          <OctahedronGeometry args={[0.4, 0]} />
+          <MeshStandardMaterial 
             color="#fde047" 
             emissive="#fde047" 
             emissiveIntensity={power ? 8 : 0.5} 
             transparent
             opacity={power ? 1 : 0.4}
           />
-        </mesh>
-        <pointLight intensity={power ? 15 : 0.5} color="#fde047" />
-      </group>
+        </Mesh>
+        <PointLight intensity={power ? 15 : 0.5} color="#fde047" />
+      </Group>
       
-      <ambientLight intensity={power ? 0.2 : 0.05} />
-      <pointLight position={[10, 10, 10]} intensity={power ? 1.5 : 0.1} />
-    </group>
+      <AmbientLight intensity={power ? 0.2 : 0.05} />
+      <PointLight position={[10, 10, 10]} intensity={power ? 1.5 : 0.1} />
+    </Group>
   );
 };
 
